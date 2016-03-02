@@ -46,7 +46,8 @@ def format_search_filter(model_fields):
     fields.
     """
     ldap_fields = convert_model_fields_to_ldap_fields(model_fields);
-    ldap_fields["objectClass"] = settings.LDAP_AUTH_OBJECT_CLASS
+    if settings.LDAP_AUTH_OBJECT_CLASS:
+        ldap_fields["objectClass"] = settings.LDAP_AUTH_OBJECT_CLASS
     search_filters = import_func(settings.LDAP_AUTH_FORMAT_SEARCH_FILTERS)(ldap_fields)
     return "(&{})".format("".join(search_filters));
 
@@ -86,7 +87,7 @@ def format_username_active_directory(model_fields):
     """
     username = model_fields["username"]
     if settings.LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN:
-        username = "{domain}\\{username}".format(
+        username = "{username}@{domain}".format(
             domain = settings.LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN,
             username = username,
         )
